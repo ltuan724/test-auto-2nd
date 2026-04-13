@@ -6,7 +6,7 @@
       "localStorage": [
         {
           "name": "auth_user",
-          "value": "{\"accessToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU5Y2ExMi00YmU3LTRmYzMtYjdhMi1hYjQyYmE0MjI1ODUiLCJ1c2VybmFtZSI6Imxvbmc1IiwianRpIjoiYzQ4MGViMWYtYjk2Ni00ZjQzLTk4NzItMmE1MmQ1YjYzM2ZkIiwiaWF0IjoxNzc2MDU0NTk3LCJleHAiOjE3NzYxNDA5OTd9.B1B3SUvqkPdovGPFp0XflqQTVpovvf7rE6NZcD2b9-0\",\"expiresIn\":86400,\"refreshToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU5Y2ExMi00YmU3LTRmYzMtYjdhMi1hYjQyYmE0MjI1ODUiLCJ1c2VybmFtZSI6Imxvbmc1IiwianRpIjoiYmI4MmI2NWUtOWI4NC00ZGUyLWExMDYtNDA4ZmI0MzM0NjJkIiwiaWF0IjoxNzc2MDU0NTk3LCJleHAiOjE3NzYyMjczOTd9.0dPUpjRmeReFR3ncHVTT9UTjqP7mMa5Rr7qAHPBs8lA\"}"
+          "value": "{\"accessToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU5Y2ExMi00YmU3LTRmYzMtYjdhMi1hYjQyYmE0MjI1ODUiLCJ1c2VybmFtZSI6Imxvbmc1IiwiaWF0IjoxNzc2MDY1MDY2LCJleHAiOjE3NzYxNTE0NjZ9.V_LnbAGPQHph-tcnbW18NiWZhtxi9Gc24rJ9C2uvWaQ\",\"expiresIn\":86400,\"refreshToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODU5Y2ExMi00YmU3LTRmYzMtYjdhMi1hYjQyYmE0MjI1ODUiLCJ1c2VybmFtZSI6Imxvbmc1IiwiaWF0IjoxNzc2MDY1MDY2LCJleHAiOjE3NzYyMzc4NjZ9.OhMW8Rcdk3Ma4Nyhl-R4djicOiL0PZ-oRQkOz78CLMY\"}"
         }
       ]
     }

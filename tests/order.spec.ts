@@ -60,6 +60,34 @@ test.describe('Order flow multi account', () => {
 
                 await page.locator("a[href='/cart']").click();
                 console.log('Đã vào giỏ hàng');
+
+                // mở popup voucher
+                //const voucherBtn = page.getByText('Chọn voucher', { exact: true });
+                const voucherBtn = page.getByRole('button', { name: 'Chọn voucherChọn 1 voucher đã lưu để áp dụng cho đơn hàng.', exact: true },);
+                if (await voucherBtn.isVisible()) {
+                    await voucherBtn.click();
+                    console.log('👉 mở voucher');
+                }
+
+                // đợi popup hiện (nếu có)
+                const voucherItem = await page.locator('div.max-h-\[70vh\].space-y-3.overflow-y-auto.p-6');// sửa selector nếu cần
+
+                if (await voucherItem.first().isVisible().catch(() => false)) {
+                    console.log('👉 có voucher');
+
+                    await voucherItem.first().click(); // chọn voucher đầu
+                } else {
+                    console.log('👉 không có voucher');
+
+                    // click nút X đóng popup
+                    const closeBtn = page.getByRole('button', { name: 'Đóng' }); // hoặc icon X
+                    if (await closeBtn.isVisible().catch(() => false)) {
+                        await closeBtn.click();
+                    }
+                }
+
+
+
                 const [response] = await Promise.all([
 
                     page.waitForResponse(res =>

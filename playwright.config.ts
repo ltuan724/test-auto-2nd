@@ -56,6 +56,10 @@ export default defineConfig({
       dependencies: ['setup'],
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'loginAdmin',
+      testMatch: /loginAdmin\.spec\.ts/,
+    },
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
