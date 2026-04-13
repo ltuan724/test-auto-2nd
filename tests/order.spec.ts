@@ -45,7 +45,7 @@ test.describe('Order flow multi account', () => {
 
                 // 👉 order flow giữ nguyên
                 await page.getByRole('link', { name: 'Sản Phẩm', exact: true }).click();
-
+                console.log('Đã vào trang sản phẩm');
                 const products = page.locator('div.border.rounded-sm.overflow-hidden.relative');
                 const count = await products.count();
                 const max = Math.min(count, 5);
@@ -56,9 +56,10 @@ test.describe('Order flow multi account', () => {
                     await page.goBack();
                     await page.waitForLoadState('networkidle');
                 }
+                console.log(`Đã thêm ${max} sản phẩm vào giỏ hàng`);
 
                 await page.locator("a[href='/cart']").click();
-
+                console.log('Đã vào giỏ hàng');
                 const [response] = await Promise.all([
 
                     page.waitForResponse(res =>
@@ -66,9 +67,9 @@ test.describe('Order flow multi account', () => {
                         res.request().method() === 'POST'
                     ),
                     page.getByText('Thanh toán', { exact: true }).click(),
-                    { timeout: 15000 }
-                ]);
 
+                ]);
+                console.log('Đã click thanh toán')
                 // ❌ order fail
                 if (response.status() !== 200) {
                     appendRow({
@@ -85,7 +86,6 @@ test.describe('Order flow multi account', () => {
                     step: 'ORDER',
                     status: 'SUCCESS'
                 });
-
                 await context.close();
 
             } catch (err) {

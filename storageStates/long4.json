@@ -5,16 +5,8 @@
       "origin": "https://thanhdanh-stg.palmteksolution.com",
       "localStorage": [
         {
-          "name": "order_preview_id",
-          "value": "c6cdecfe-3160-404f-8547-4fcce410b49c"
-        },
-        {
-          "name": "CART",
-          "value": "{\"items\":[{\"id\":\"9f1aaa58-dbe0-4327-bd3a-5162e9dbcaf2\",\"quantity\":1},{\"id\":\"8620fecf-7bde-4367-b88f-6e2e401a5e48\",\"quantity\":1},{\"id\":\"52e00d0c-e36e-40e6-93e8-ec60b443668e\",\"quantity\":1},{\"id\":\"437b24aa-ca5e-43f5-81e5-df0f7a641419\",\"quantity\":1},{\"id\":\"e8daf6aa-a1f1-44f7-9519-f243bccacda2\",\"quantity\":1}],\"lastUpdated\":1776051081453}"
-        },
-        {
           "name": "auth_user",
-          "value": "{\"accessToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4ZTBlMWQ3NC1lOTI5LTRlMDctOWJlYS0xZWY4MzY4ZTRhMjUiLCJ1c2VybmFtZSI6Imxvbmc0IiwiaWF0IjoxNzc2MDUxMDgxLCJleHAiOjE3NzYxMzc0ODF9.wL448yR8_O8eLsHDNwoqcAMWb-WktrywvJcTz55tnx4\",\"expiresIn\":86400,\"refreshToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4ZTBlMWQ3NC1lOTI5LTRlMDctOWJlYS0xZWY4MzY4ZTRhMjUiLCJ1c2VybmFtZSI6Imxvbmc0IiwiaWF0IjoxNzc2MDUxMDgxLCJleHAiOjE3NzYyMjM4ODF9.t9ez0RxhUpAFXGGRMK8zW_M7rq5sNyYU_yHke7iQdeM\"}"
+          "value": "{\"accessToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4ZTBlMWQ3NC1lOTI5LTRlMDctOWJlYS0xZWY4MzY4ZTRhMjUiLCJ1c2VybmFtZSI6Imxvbmc0IiwianRpIjoiZDRjNjZiMjItOWVkOC00MTQ5LTllYmUtOGFlMjA0MjlmYmY0IiwiaWF0IjoxNzc2MDU0NjAyLCJleHAiOjE3NzYxNDEwMDJ9.S-vGuAMed3fHELlkSVRwCJ9dtfIx-BBRCOA3J4UJFQI\",\"expiresIn\":86400,\"refreshToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4ZTBlMWQ3NC1lOTI5LTRlMDctOWJlYS0xZWY4MzY4ZTRhMjUiLCJ1c2VybmFtZSI6Imxvbmc0IiwianRpIjoiOGRhZjExZGEtMjRlYi00NmQ3LWIzNzctZGQ5N2M5YmU3ZjE3IiwiaWF0IjoxNzc2MDU0NjAyLCJleHAiOjE3NzYyMjc0MDJ9.bnRDJ7cr1vtUoG6aVYJqtY2kUMlf0vEuDZrm4-MDk4U\"}"
         }
       ]
     }

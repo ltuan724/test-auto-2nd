@@ -6,7 +6,7 @@
       "localStorage": [
         {
           "name": "auth_user",
-          "value": "{\"accessToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5NDM4ODQ2MC01OTJkLTQ5MDAtYWVkNy0yZjRlMDRiNjIwNDciLCJ1c2VybmFtZSI6ImxvbmczIiwiaWF0IjoxNzc2MDUxMDkyLCJleHAiOjE3NzYxMzc0OTJ9.zxIgLmXc1a6SHLbSp76iGIQo8iayr8Lg9un8B2hd3zI\",\"expiresIn\":86400,\"refreshToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5NDM4ODQ2MC01OTJkLTQ5MDAtYWVkNy0yZjRlMDRiNjIwNDciLCJ1c2VybmFtZSI6ImxvbmczIiwiaWF0IjoxNzc2MDUxMDkyLCJleHAiOjE3NzYyMjM4OTJ9.NJqxjGeGkpEk9Wv9TNuXW-fBabJaF-TfXZwHpEerNzY\"}"
+          "value": "{\"accessToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5NDM4ODQ2MC01OTJkLTQ5MDAtYWVkNy0yZjRlMDRiNjIwNDciLCJ1c2VybmFtZSI6ImxvbmczIiwianRpIjoiOWE3NGU2NWMtNDQ5MS00Zjc5LWFlNzEtNjZmZTY4ZWJjNzg1IiwiaWF0IjoxNzc2MDU0NjEyLCJleHAiOjE3NzYxNDEwMTJ9.Pgg5GzLBPI5lU2SfBQ5tPiEGJICcMf0ly5aCzKpYzsU\",\"expiresIn\":86400,\"refreshToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5NDM4ODQ2MC01OTJkLTQ5MDAtYWVkNy0yZjRlMDRiNjIwNDciLCJ1c2VybmFtZSI6ImxvbmczIiwianRpIjoiOWM3NWM4YmEtMTJkZi00MGUxLWI4NWEtZjkzMmQzMmJmMGFiIiwiaWF0IjoxNzc2MDU0NjEyLCJleHAiOjE3NzYyMjc0MTJ9.91zOYcEijM35_XRbEq0EwYKKw76bz7IYLrWgnZicwTg\"}"
         }
       ]
     }
