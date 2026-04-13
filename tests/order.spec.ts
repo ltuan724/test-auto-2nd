@@ -60,11 +60,13 @@ test.describe('Order flow multi account', () => {
                 await page.locator("a[href='/cart']").click();
 
                 const [response] = await Promise.all([
+
                     page.waitForResponse(res =>
                         res.url().includes('/orders/confirm') &&
                         res.request().method() === 'POST'
                     ),
-                    page.getByText('Thanh toán', { exact: true }).click()
+                    page.getByText('Thanh toán', { exact: true }).click(),
+                    { timeout: 15000 }
                 ]);
 
                 // ❌ order fail
