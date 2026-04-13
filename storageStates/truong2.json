@@ -1,0 +1,14 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "https://thanhdanh-stg.palmteksolution.com",
+      "localStorage": [
+        {
+          "name": "auth_user",
+          "value": "{\"accessToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkOTYxOWY1OC1iMjlmLTRhZGUtOGQ2Ny03OTRjZTU5NTVhYTgiLCJ1c2VybmFtZSI6InRydW9uZzIiLCJpYXQiOjE3NzYwNjcwNTYsImV4cCI6MTc3NjE1MzQ1Nn0.dPO__U4fGBfU2EXdo6qYrHPn1dK2cc_LjlsyRRVWChw\",\"expiresIn\":86400,\"refreshToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkOTYxOWY1OC1iMjlmLTRhZGUtOGQ2Ny03OTRjZTU5NTVhYTgiLCJ1c2VybmFtZSI6InRydW9uZzIiLCJpYXQiOjE3NzYwNjcwNTYsImV4cCI6MTc3NjIzOTg1Nn0.8qRMoR-8TiZREksOy7iRl3gfDqcXNrWoKUpQYf0JJPA\"}"
+        }
+      ]
+    }
+  ]
+}
