@@ -1,0 +1,26 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://cms-tdecommerce.ncs.int",
+      "localStorage": [
+        {
+          "name": "ACCESS_TOKEN",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkOTYxOWY1OC1iMjlmLTRhZGUtOGQ2Ny03OTRjZTU5NTVhYTgiLCJ1c2VybmFtZSI6InRydW9uZzIiLCJpYXQiOjE3NzYwNzEzMDEsImV4cCI6MTc3NjE1NzcwMX0.dfBJ_550s-vhXTNWsK7UGj672sguN9CUAnH827Abg9k"
+        },
+        {
+          "name": "TOKEN_TYPE",
+          "value": "Bearer"
+        },
+        {
+          "name": "EXPIRES_AT",
+          "value": "1776157700842"
+        },
+        {
+          "name": "REFRESH_TOKEN",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkOTYxOWY1OC1iMjlmLTRhZGUtOGQ2Ny03OTRjZTU5NTVhYTgiLCJ1c2VybmFtZSI6InRydW9uZzIiLCJpYXQiOjE3NzYwNzEzMDEsImV4cCI6MTc3NjI0NDEwMX0.Jp-MJ5Tkyz2au6Mtgl3Co0d94Wq7zRvwCsfwN8cKYcE"
+        }
+      ]
+    }
+  ]
+}

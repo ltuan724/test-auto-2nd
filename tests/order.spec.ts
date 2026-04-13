@@ -61,29 +61,56 @@ test.describe('Order flow multi account', () => {
                 await page.locator("a[href='/cart']").click();
                 console.log('Đã vào giỏ hàng');
 
-                // mở popup voucher
-                //const voucherBtn = page.getByText('Chọn voucher', { exact: true });
-                const voucherBtn = page.getByRole('button', { name: 'Chọn voucherChọn 1 voucher đã lưu để áp dụng cho đơn hàng.', exact: true },);
-                if (await voucherBtn.isVisible()) {
-                    await voucherBtn.click();
-                    console.log('👉 mở voucher');
+                // mở popup voucher - thử nhiều cách
+                let voucherOpened = false;
+
+                // Cách 1: Button với text dài
+                const voucherBtn1 = page.getByRole('button', { name: 'Chọn voucherChọn 1 voucher đã lưu để áp dụng cho đơn hàng.', exact: true });
+                if (await voucherBtn1.isVisible().catch(() => false)) {
+                    await voucherBtn1.click();
+                    voucherOpened = true;
+                    console.log('👉 mở voucher (cách 1)');
                 }
 
-                // đợi popup hiện (nếu có)
-                const voucherItem = await page.locator('div.max-h-\[70vh\].space-y-3.overflow-y-auto.p-6');// sửa selector nếu cần
-
-                if (await voucherItem.first().isVisible().catch(() => false)) {
-                    console.log('👉 có voucher');
-
-                    await voucherItem.first().click(); // chọn voucher đầu
-                } else {
-                    console.log('👉 không có voucher');
-
-                    // click nút X đóng popup
-                    const closeBtn = page.getByRole('button', { name: 'Đóng' }); // hoặc icon X
-                    if (await closeBtn.isVisible().catch(() => false)) {
-                        await closeBtn.click();
+                // Cách 2: Button với text ngắn hơn
+                if (!voucherOpened) {
+                    const voucherBtn2 = page.getByText('Chọn voucher', { exact: true });
+                    if (await voucherBtn2.isVisible().catch(() => false)) {
+                        await voucherBtn2.click();
+                        voucherOpened = true;
+                        console.log('👉 mở voucher (cách 2)');
                     }
+                }
+
+                // Cách 3: Tìm button chứa text "voucher"
+                if (!voucherOpened) {
+                    const voucherBtn3 = page.locator('button').filter({ hasText: /voucher/i });
+                    if (await voucherBtn3.isVisible().catch(() => false)) {
+                        await voucherBtn3.click();
+                        voucherOpened = true;
+                        console.log('👉 mở voucher (cách 3)');
+                    }
+                }
+
+                // Đợi popup hiện và kiểm tra voucher
+                if (voucherOpened) {
+                    await page.waitForTimeout(1000); // đợi popup load
+
+                    const voucherItem = page.locator('div.max-h-\\[70vh\\].space-y-3.overflow-y-auto.p-6');
+
+                    if (await voucherItem.first().isVisible().catch(() => false)) {
+                        console.log('👉 có voucher');
+                        await voucherItem.first().click(); // chọn voucher đầu
+                    } else {
+                        console.log('👉 không có voucher');
+                        // đóng popup
+                        const closeBtn = page.getByRole('button', { name: 'Đóng' });
+                        if (await closeBtn.isVisible().catch(() => false)) {
+                            await closeBtn.click();
+                        }
+                    }
+                } else {
+                    console.log('👉 không tìm thấy button voucher');
                 }
 
 

@@ -5,8 +5,8 @@ import * as fs from 'fs';
 
 const data: any = readExcel('data.xlsx', 'Sheet2');
 
-if (!fs.existsSync('storageStates')) {
-    fs.mkdirSync('storageStates');
+if (!fs.existsSync('admin')) {
+    fs.mkdirSync('admin');
 }
 
 
@@ -37,7 +37,7 @@ test.describe('Login multiple accounts', () => {
                 }
 
                 await page.context().storageState({
-                    path: `storageStates/${username}.json`,
+                    path: `admin/${username}.json`,
                 });
 
                 appendRow({
