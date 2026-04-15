@@ -3,9 +3,17 @@ import { readExcel } from '../utils/readExcel';
 import { appendRow, resetExcel } from '../utils/excel';
 import fs from 'fs';
 
+type Order = {
+    code: string;
+    status: string;
+};
+
 const data: any = readExcel('data.xlsx');
-const SKIP_STATUSES = ['Đã giao', 'Đã hủy', 'Hoàn thành'];
-const TARGET_STATUSES = ['Đang xử lý', 'Đã giao'];
+const DELIVERED_STATUS = 'Đã giao';
+const COMPLETED_STATUS = 'Hoàn thành';
+const SKIP_STATUSES = ['Đã hủy', COMPLETED_STATUS];
+const TARGET_STATUSES = ['Đang xử lý', DELIVERED_STATUS];
+const ORDER_ADMIN_STEP = 'ORDER_ADMIN';
 
 async function openOrderList(page: any) {
     await page.getByRole('button', { name: 'Danh sách đơn hàng' }).click();
@@ -20,33 +28,59 @@ async function getOrderDialog(page: any) {
 async function closeOrderDialog(page: any) {
     const dialog = page.getByRole('dialog').first();
     if (await dialog.isVisible().catch(() => false)) {
-        await dialog.getByRole('button', { name: 'Đóng' }).click();
+        const closeButton = dialog.getByRole('button', { name: 'Đóng' });
+
+        try {
+            await closeButton.click();
+        } catch (error) {
+            const dialogStillVisible = await dialog.isVisible().catch(() => false);
+
+            if (dialogStillVisible) {
+                throw error;
+            }
+        }
+
         await expect(dialog).not.toBeVisible();
     }
 }
 
-async function openOrderDetailByCode(page: any, orderCode: string) {
-    const row = page.locator('tbody tr').filter({
+function getOrderRow(page: any, orderCode: string) {
+    return page.locator('tbody tr').filter({
         has: page.getByText(orderCode, { exact: true })
     }).first();
+}
+
+async function openOrderDetailByCode(page: any, orderCode: string) {
+    const row = getOrderRow(page, orderCode);
 
     await expect(row).toBeVisible();
     await row.locator('td').last().locator('button, svg').first().click();
     await getOrderDialog(page);
 }
 
-async function getDialogStatus(page: any) {
+async function expectOrderRowStatus(page: any, orderCode: string, statusName: string) {
+    const row = getOrderRow(page, orderCode);
+    await expect(row.locator('td').nth(3)).toContainText(statusName);
+}
+
+async function getStatusControls(page: any) {
     const dialog = await getOrderDialog(page);
     const statusSection = dialog.getByText('Cập nhật trạng thái', { exact: true }).locator('..');
-    const statusBox = statusSection.getByRole('combobox').first();
+
+    return {
+        dialog,
+        statusBox: statusSection.getByRole('combobox').first(),
+        saveButton: dialog.getByRole('button', { name: 'Lưu' })
+    };
+}
+
+async function getDialogStatus(page: any) {
+    const { statusBox } = await getStatusControls(page);
     return (await statusBox.textContent())?.trim() ?? '';
 }
 
 async function updateStatus(page: any, statusName: string) {
-    const dialog = await getOrderDialog(page);
-    const statusSection = dialog.getByText('Cập nhật trạng thái', { exact: true }).locator('..');
-    const statusBox = statusSection.getByRole('combobox').first();
-    const saveButton = dialog.getByRole('button', { name: 'Lưu' });
+    const { statusBox, saveButton } = await getStatusControls(page);
 
     await statusBox.scrollIntoViewIfNeeded();
     await statusBox.click();
@@ -58,14 +92,14 @@ async function updateStatus(page: any, statusName: string) {
 }
 
 async function expectStatus(page: any, statusName: string) {
-    const dialog = await getOrderDialog(page);
-    const statusSection = dialog.getByText('Cập nhật trạng thái', { exact: true }).locator('..');
-    await expect(statusSection.getByRole('combobox').first()).toContainText(statusName);
+    const { statusBox } = await getStatusControls(page);
+    await expect(statusBox).toContainText(statusName);
 }
 
 async function updateStatusAndReopen(page: any, orderCode: string, statusName: string) {
     await updateStatus(page, statusName);
     await closeOrderDialog(page);
+    await expectOrderRowStatus(page, orderCode, statusName);
     await openOrderDetailByCode(page, orderCode);
     await expectStatus(page, statusName);
 }
@@ -74,7 +108,7 @@ async function getTopFiveOrders(page: any) {
     const rows = page.locator('tbody tr');
     const total = await rows.count();
     const limit = Math.min(total, 5);
-    const orders: Array<{ code: string; status: string }> = [];
+    const orders: Order[] = [];
 
     for (let i = 0; i < limit; i++) {
         const row = rows.nth(i);
@@ -91,6 +125,25 @@ async function getTopFiveOrders(page: any) {
 
 function logOrderStep(row: Record<string, any>) {
     appendRow(row);
+}
+
+function logSkippedOrder(username: string, order: Order) {
+    logOrderStep({
+        username,
+        orderCode: order.code,
+        step: order.status,
+        result: 'ALREADY_AT_STEP',
+        fromStatus: order.status,
+        toStatus: order.status
+    });
+}
+
+function getTargetStatusesForOrder(currentStatus: string) {
+    if (currentStatus === DELIVERED_STATUS) {
+        return [COMPLETED_STATUS];
+    }
+
+    return TARGET_STATUSES;
 }
 
 async function processStatusStep(page: any, username: string, orderCode: string, targetStatus: string) {
@@ -120,11 +173,11 @@ async function processStatusStep(page: any, username: string, orderCode: string,
     });
 }
 
-async function processOrder(page: any, username: string, orderCode: string) {
+async function processOrder(page: any, username: string, orderCode: string, currentStatus: string) {
     await openOrderDetailByCode(page, orderCode);
     console.log(`Da mo chi tiet don hang ${orderCode}`);
 
-    for (const targetStatus of TARGET_STATUSES) {
+    for (const targetStatus of getTargetStatusesForOrder(currentStatus)) {
         await processStatusStep(page, username, orderCode, targetStatus);
         console.log(`Da xu ly ${orderCode} cho step ${targetStatus}`);
     }
@@ -146,7 +199,7 @@ test.describe('Order flow multi account', () => {
             if (!fs.existsSync(path)) {
                 appendRow({
                     username,
-                    step: 'ORDER_ADMIN',
+                    step: ORDER_ADMIN_STEP,
                     status: 'SKIP_NO_LOGIN'
                 });
                 return;
@@ -164,7 +217,7 @@ test.describe('Order flow multi account', () => {
                 if (page.url().includes('/auth/sign-in')) {
                     appendRow({
                         username,
-                        step: 'ORDER_ADMIN',
+                        step: ORDER_ADMIN_STEP,
                         status: 'SESSION_DIE'
                     });
                     return;
@@ -178,32 +231,25 @@ test.describe('Order flow multi account', () => {
 
                 for (const order of topOrders) {
                     if (SKIP_STATUSES.includes(order.status)) {
-                        appendRow({
-                            username,
-                            orderCode: order.code,
-                            step: order.status,
-                            result: 'ALREADY_AT_STEP',
-                            fromStatus: order.status,
-                            toStatus: order.status
-                        });
+                        logSkippedOrder(username, order);
                         console.log(`Bo qua ${order.code} vi dang o trang thai ${order.status}`);
                     }
                 }
 
                 for (const order of processableOrders) {
-                    await processOrder(page, username, order.code);
+                    await processOrder(page, username, order.code, order.status);
                 }
 
                 appendRow({
                     username,
-                    step: 'ORDER_ADMIN',
+                    step: ORDER_ADMIN_STEP,
                     status: processableOrders.length > 0 ? 'SUCCESS' : 'SKIP_NO_ELIGIBLE_ORDER',
                     processed: processableOrders.length
                 });
             } catch (err) {
                 appendRow({
                     username,
-                    step: 'ORDER_ADMIN',
+                    step: ORDER_ADMIN_STEP,
                     status: 'ERROR',
                     error: String(err)
                 });
