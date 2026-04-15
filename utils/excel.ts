@@ -3,6 +3,12 @@ import * as fs from 'fs';
 
 const FILE = 'result.xlsx';
 
+export function resetExcel() {
+    if (fs.existsSync(FILE)) {
+        fs.unlinkSync(FILE);
+    }
+}
+
 export function appendRow(row: Record<string, any>) {
     let data: Record<string, any>[] = [];
 
@@ -12,9 +18,12 @@ export function appendRow(row: Record<string, any>) {
         data = sheet ? XLSX.utils.sheet_to_json(sheet) : [];
     }
 
-    const index = data.findIndex(
-        r => r.username === row.username && r.step === row.step
-    );
+    const index = data.findIndex(r => {
+        const sameUsername = r.username === row.username;
+        const sameOrderCode = (r.orderCode ?? '') === (row.orderCode ?? '');
+        const sameStep = r.step === row.step;
+        return sameUsername && sameOrderCode && sameStep;
+    });
 
     if (index !== -1) {
         data[index] = row; // update

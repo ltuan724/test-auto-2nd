@@ -33,10 +33,12 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    headless: true,
+    headless: false,
+
     launchOptions: {
+      args: ['--window-position=0,0'],// 📍 góc trái màn hình chính
       slowMo: 1000, // 1 giây mỗi step
-      // args: ['--window-position=0,0']// 📍 góc trái màn hình chính
+
     }
   },
 
@@ -60,6 +62,13 @@ export default defineConfig({
       name: 'loginAdmin',
       testMatch: /loginAdmin\.spec\.ts/,
     },
+    {
+      name: 'productAdmin',
+      testMatch: /productAdmin\.spec\.ts/,
+      dependencies: ['loginAdmin'],
+      use: { ...devices['Desktop Chrome'] },
+    },
+
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },

@@ -1,6 +1,5 @@
 import { test } from '@playwright/test';
 import { readExcel } from '../utils/readExcel';
-import { appendRow } from '../utils/excel';
 import * as fs from 'fs';
 
 const data: any = readExcel('data.xlsx', 'Sheet2');
@@ -27,32 +26,13 @@ test.describe('Login multiple accounts', () => {
                 await page.waitForLoadState('networkidle');
 
                 if (page.url().includes('/login')) {
-                    appendRow({
-                        username,
-                        step: 'LOGIN',
-                        status: 'FAIL',
-                    });
-
                     throw new Error(`Login failed: ${username}`);
                 }
 
                 await page.context().storageState({
                     path: `admin/${username}.json`,
                 });
-
-                appendRow({
-                    username,
-                    step: 'LOGIN',
-                    status: 'SUCCESS',
-                });
             } catch (err) {
-                appendRow({
-
-                    username,
-                    step: 'LOGIN',
-                    status: 'ERROR',
-                    error: String(err),
-                });
                 return;
             }
         });
