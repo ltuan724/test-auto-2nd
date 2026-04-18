@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { readExcel } from '../utils/readExcel';
 import { appendRow, resetExcel } from '../utils/excel';
 import fs from 'fs';
@@ -8,35 +8,40 @@ type Order = {
     status: string;
 };
 
-const data: any = readExcel('data.xlsx');
+const data: any = readExcel('data.xlsx', 'Sheet2');
+const CONFIRMED_STATUS = 'Đã xác nhận';
+const SHIPPING_STATUS = 'Đang giao hàng';
 const DELIVERED_STATUS = 'Đã giao';
 const COMPLETED_STATUS = 'Hoàn thành';
-const SKIP_STATUSES = ['Đã hủy', COMPLETED_STATUS];
-const TARGET_STATUSES = ['Đang xử lý', DELIVERED_STATUS];
+const CANCELLED_STATUS = 'Đã hủy';
+const SKIP_STATUSES = [CANCELLED_STATUS, COMPLETED_STATUS];
 const ORDER_ADMIN_STEP = 'ORDER_ADMIN';
 
-async function openOrderList(page: any) {
+async function openOrderList(page: Page) {
     await page.getByRole('button', { name: 'Danh sách đơn hàng' }).click();
 }
 
-async function getOrderDialog(page: any) {
+async function getOrderDialog(page: Page) {
     const dialog = page.getByRole('dialog').first();
     await expect(dialog).toBeVisible();
     return dialog;
 }
 
-async function closeOrderDialog(page: any) {
+async function closeOrderDialog(page: Page) {
     const dialog = page.getByRole('dialog').first();
     if (await dialog.isVisible().catch(() => false)) {
         const closeButton = dialog.getByRole('button', { name: 'Đóng' });
 
         try {
-            await closeButton.click();
-        } catch (error) {
+            await closeButton.waitFor({ state: 'visible', timeout: 3000 });
+            await closeButton.click({ timeout: 3000 });
+        } catch {
             const dialogStillVisible = await dialog.isVisible().catch(() => false);
 
             if (dialogStillVisible) {
-                throw error;
+                await page.keyboard.press('Escape').catch(() => undefined);
+                await expect(dialog).not.toBeVisible({ timeout: 3000 });
+                return;
             }
         }
 
@@ -44,13 +49,13 @@ async function closeOrderDialog(page: any) {
     }
 }
 
-function getOrderRow(page: any, orderCode: string) {
+function getOrderRow(page: Page, orderCode: string) {
     return page.locator('tbody tr').filter({
         has: page.getByText(orderCode, { exact: true })
     }).first();
 }
 
-async function openOrderDetailByCode(page: any, orderCode: string) {
+async function openOrderDetailByCode(page: Page, orderCode: string) {
     const row = getOrderRow(page, orderCode);
 
     await expect(row).toBeVisible();
@@ -58,12 +63,12 @@ async function openOrderDetailByCode(page: any, orderCode: string) {
     await getOrderDialog(page);
 }
 
-async function expectOrderRowStatus(page: any, orderCode: string, statusName: string) {
+async function expectOrderRowStatus(page: Page, orderCode: string, statusName: string) {
     const row = getOrderRow(page, orderCode);
     await expect(row.locator('td').nth(3)).toContainText(statusName);
 }
 
-async function getStatusControls(page: any) {
+async function getStatusControls(page: Page) {
     const dialog = await getOrderDialog(page);
     const statusSection = dialog.getByText('Cập nhật trạng thái', { exact: true }).locator('..');
 
@@ -74,29 +79,54 @@ async function getStatusControls(page: any) {
     };
 }
 
-async function getDialogStatus(page: any) {
+async function getDialogStatus(page: Page) {
     const { statusBox } = await getStatusControls(page);
     return (await statusBox.textContent())?.trim() ?? '';
 }
 
-async function updateStatus(page: any, statusName: string) {
+function getTargetStatusesForOrder(currentStatus: string) {
+    if (currentStatus === COMPLETED_STATUS || currentStatus === CANCELLED_STATUS) {
+        return [];
+    }
+
+    if (currentStatus === DELIVERED_STATUS) {
+        return [COMPLETED_STATUS];
+    }
+
+    if (currentStatus === SHIPPING_STATUS) {
+        return [DELIVERED_STATUS];
+    }
+
+    if (currentStatus === CONFIRMED_STATUS) {
+        return [SHIPPING_STATUS, DELIVERED_STATUS];
+    }
+
+    return [SHIPPING_STATUS, DELIVERED_STATUS];
+}
+
+async function updateStatus(page: Page, statusName: string) {
     const { statusBox, saveButton } = await getStatusControls(page);
 
     await statusBox.scrollIntoViewIfNeeded();
     await statusBox.click();
+
     const listbox = page.getByRole('listbox').last();
     await expect(listbox).toBeVisible();
-    await listbox.getByRole('option', { name: statusName, exact: true }).click();
+
+    const option = listbox.getByRole('option', { name: statusName, exact: true });
+    await expect(option).toBeVisible();
+    await option.click();
+
     await expect(statusBox).toContainText(statusName);
     await saveButton.click();
 }
 
-async function expectStatus(page: any, statusName: string) {
+async function expectStatus(page: Page, statusName: string) {
     const { statusBox } = await getStatusControls(page);
     await expect(statusBox).toContainText(statusName);
 }
 
-async function updateStatusAndReopen(page: any, orderCode: string, statusName: string) {
+async function updateStatusAndReopen(page: Page, orderCode: string, statusName: string) {
     await updateStatus(page, statusName);
     await closeOrderDialog(page);
     await expectOrderRowStatus(page, orderCode, statusName);
@@ -104,10 +134,10 @@ async function updateStatusAndReopen(page: any, orderCode: string, statusName: s
     await expectStatus(page, statusName);
 }
 
-async function getTopFiveOrders(page: any) {
+async function getTopFiveOrders(page: Page) {
     const rows = page.locator('tbody tr');
     const total = await rows.count();
-    const limit = Math.min(total, 5);
+    const limit = Math.min(total, 9);
     const orders: Order[] = [];
 
     for (let i = 0; i < limit; i++) {
@@ -138,15 +168,7 @@ function logSkippedOrder(username: string, order: Order) {
     });
 }
 
-function getTargetStatusesForOrder(currentStatus: string) {
-    if (currentStatus === DELIVERED_STATUS) {
-        return [COMPLETED_STATUS];
-    }
-
-    return TARGET_STATUSES;
-}
-
-async function processStatusStep(page: any, username: string, orderCode: string, targetStatus: string) {
+async function processStatusStep(page: Page, username: string, orderCode: string, targetStatus: string) {
     const currentStatus = await getDialogStatus(page);
 
     if (currentStatus === targetStatus) {
@@ -173,7 +195,7 @@ async function processStatusStep(page: any, username: string, orderCode: string,
     });
 }
 
-async function processOrder(page: any, username: string, orderCode: string, currentStatus: string) {
+async function processOrder(page: Page, username: string, orderCode: string, currentStatus: string) {
     await openOrderDetailByCode(page, orderCode);
     console.log(`Da mo chi tiet don hang ${orderCode}`);
 
@@ -186,7 +208,8 @@ async function processOrder(page: any, username: string, orderCode: string, curr
 }
 
 test.describe('Order flow multi account', () => {
-    test.setTimeout(120000);
+    test.setTimeout(1200000);
+
     test.beforeAll(() => {
         resetExcel();
     });
@@ -212,7 +235,7 @@ test.describe('Order flow multi account', () => {
             try {
                 const page = await context.newPage();
 
-                await page.goto('http://cms-tdecommerce.ncs.int/auth/sign-in');
+                await page.goto('https://cms-thanhdanh-stg.palmteksolution.com/auth/sign-in');
 
                 if (page.url().includes('/auth/sign-in')) {
                     appendRow({

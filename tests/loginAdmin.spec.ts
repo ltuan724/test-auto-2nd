@@ -15,7 +15,7 @@ test.describe('Login multiple accounts', () => {
             const username = String(row.username).trim().toLowerCase();
 
             try {
-                await page.goto('http://cms-tdecommerce.ncs.int/auth/sign-in');
+                await page.goto('https://cms-thanhdanh-stg.palmteksolution.com/auth/sign-in');
 
                 await page.getByPlaceholder('Nhập tên đăng nhập', { exact: true }).fill(username);
                 console.log(`Đã điền username: ${username}`);
@@ -25,7 +25,7 @@ test.describe('Login multiple accounts', () => {
                 console.log(`Đã click login cho: ${username}`);
                 await page.waitForLoadState('networkidle');
 
-                if (page.url().includes('/login')) {
+                if (page.url().includes('/auth/sign-in')) {
                     throw new Error(`Login failed: ${username}`);
                 }
 
